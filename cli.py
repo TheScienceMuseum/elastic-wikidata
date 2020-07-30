@@ -26,18 +26,16 @@ def main(dump, path, cluster, user, password, config, index, limit):
         check_es_credentials(es_credentials)
     else:
         # check environment variables/flags
-        missing_vals = [i for i in (cluster, user, password) if not bool(i)]
+        es_credentials = {}
 
-        if len(missing_vals) > 0:
-            raise ValueError(
-                f"{len(missing_vals)} values missing from Elasticsearch credentials."
-            )
-        else:
-            es_credentials = {
-                "ELASTICSEARCH_CLUSTER": cluster,
-                "ELASTICSEARCH_USER": user,
-                "ELASTICSEARCH_PASSWORD": password,
-            }
+        if cluster:
+            es_credentials["ELASTICSEARCH_CLUSTER"] = cluster
+        if user:
+            es_credentials["ELASTICSEARCH_USER"] = user
+        if password:
+            es_credentials["ELASTICSEARCH_PASSWORD"] = password
+
+        check_es_credentials(es_credentials)
 
     #  run job
     if dump:
@@ -57,16 +55,16 @@ def load_from_dump(path, es_credentials, index, limit):
 
 
 def check_es_credentials(credentials: dict):
-    assert all(
-        [
-            c in credentials
-            for c in (
-                "ELASTICSEARCH_CLUSTER",
-                "ELASTICSEARCH_USER",
-                "ELASTICSEARCH_PASSWORD",
-            )
-        ]
-    )
+    credentials_present = set(credentials.keys())
+    credentials_required = {
+        "ELASTICSEARCH_CLUSTER",
+        "ELASTICSEARCH_USER",
+        "ELASTICSEARCH_PASSWORD",
+    }
+    missing_credentials = credentials_required - credentials_present
+
+    if len(missing_credentials) > 0:
+        raise ValueError(f"Missing Elasticsearch credentials: {missing_credentials}")
 
 
 if __name__ == "__main__":
