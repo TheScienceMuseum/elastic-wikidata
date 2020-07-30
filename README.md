@@ -2,6 +2,13 @@
 
 Simple CLI tools to load a subset of Wikidata into Elasticsearch.
 
+Contents:
+- [Why?](#why)
+- [Installation](#installation)
+- [Setup](#setup)
+- [Usage](#usage)
+  - [Loading from Wikidata dump (.ndjson)](#loading-from-wikidata-dump-ndjson)
+
 ## Why?
 
 Running text search programmatically on Wikidata means using the MediaWiki query API, either [directly](https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=John_Snow&srlimit=10&srprop=size&formatversion=2) or [through the Wikidata query service/SPARQL](https://query.wikidata.org/#SELECT%20%2a%20WHERE%20%7B%0A%20%20SERVICE%20wikibase%3Amwapi%20%7B%0A%20%20%20%20%20%20bd%3AserviceParam%20wikibase%3Aendpoint%20%22en.wikipedia.org%22%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20wikibase%3Aapi%20%22Search%22%3B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20mwapi%3Asrsearch%20%22John%20Snow%22.%0A%20%20%20%20%20%20%3Ftitle%20wikibase%3AapiOutput%20mwapi%3Atitle.%0A%20%20%7D%0A%20%20%20hint%3APrior%20hint%3ArunLast%20%22true%22.%0A%20%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22.%20%7D%0A%7D%20LIMIT%2020).
