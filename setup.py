@@ -18,4 +18,9 @@ setuptools.setup(
     ],
     python_requires=">=3.6",
     packages=setuptools.find_packages(),
+    py_modules=["cli"],
+    entry_points="""
+    [console_scripts]
+    ew=cli:main
+    """,
 )
