@@ -7,7 +7,7 @@ from configparser import ConfigParser
 
 
 @click.command()
-@click.option("--dump", "-d", is_flag=True)
+@click.argument("source", nargs=1)
 @click.option("--path", "-p", type=click.Path(exists=True))
 @click.option("--cluster", envvar="ELASTICSEARCH_CLUSTER")
 @click.option("--user", envvar="ELASTICSEARCH_USER")
@@ -15,7 +15,7 @@ from configparser import ConfigParser
 @click.option("--config", "-c", type=click.Path(exists=True))
 @click.option("--index", "-i", prompt="Elasticsearch index")
 @click.option("--limit", "-l", type=int)
-def main(dump, path, cluster, user, password, config, index, limit):
+def main(source, path, cluster, user, password, config, index, limit):
     # get elasticsearch credentials
     if config:
         # read .ini file
@@ -38,8 +38,10 @@ def main(dump, path, cluster, user, password, config, index, limit):
         check_es_credentials(es_credentials)
 
     #  run job
-    if dump:
+    if source == "dump":
         load_from_dump(path, es_credentials, index, limit)
+    else:
+        raise ValueError("source argument must be either dump or sparql")
 
 
 def load_from_dump(path, es_credentials, index, limit):
