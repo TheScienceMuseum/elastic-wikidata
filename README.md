@@ -2,7 +2,6 @@
 
 Simple CLI tools to load a subset of Wikidata into Elasticsearch.
 
-Contents:
 - [Why?](#why)
 - [Installation](#installation)
 - [Setup](#setup)
