@@ -3,6 +3,7 @@ from itertools import islice
 from tqdm.auto import tqdm
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import parallel_bulk
+import re
 
 
 class processDump:
@@ -19,10 +20,41 @@ class processDump:
         self.dump_path = dump_path
         self.index_name = index_name
 
+        # process kwargs/set defaults
         if "doc_limit" in kwargs:
             self.doc_limit = kwargs["doc_limit"]
         else:
             self.doc_limit = None
+
+        self.wiki_options = {}
+
+        if "lang" in kwargs:
+            self.wiki_options["lang"] = kwargs["lang"]
+        else:
+            self.wiki_options["lang"] = "en"
+
+        def wiki_property_check(p):
+            if len(re.findall(r"(p\d+)", p.lower())) == 1:
+                return True
+            else:
+                print(f"WARNING: property {p} is not a valid Wikidata property")
+                return False
+
+        if "properties" in kwargs:
+            if isinstance(kwargs["properties"], str) and wiki_property_check(
+                kwargs["properties"]
+            ):
+                self.wiki_options["properties"] = [
+                    kwargs["properties"].upper()
+                ]  # [P31], not [p31]
+            elif isinstance(kwargs["properties"], list):
+                self.wiki_options["properties"] = [
+                    item.upper()
+                    for item in kwargs["properties"]
+                    if wiki_property_check(item)
+                ]
+        else:
+            self.wiki_options["properties"] = ["P31"]
 
     def start_elasticsearch(self):
         """
@@ -71,7 +103,8 @@ class processDump:
         Processes a single document from the JSON dump, returning a filtered version of that document. 
         """
 
-        lang = self.config["lang"]
+        lang = self.wiki_options["lang"]
+        properties = self.wiki_options["properties"]
 
         newdoc = {"id": doc["id"]}
 
@@ -92,7 +125,7 @@ class processDump:
         # add claims (property values)
         newdoc["claims"] = {}
 
-        for p in self.config["properties"]:
+        for p in properties:
             if p in doc["claims"]:
                 newdoc["claims"][p] = [
                     i["mainsnak"]["datavalue"]["value"]["id"] for i in doc["claims"][p]

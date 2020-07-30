@@ -13,8 +13,8 @@ There are a couple of reasons you may not want to do this when running searches 
 
 ## Installation
 
-1. Download 
-2. `cd` into root 
+1. Download
+2. `cd` into root
 3. `pip install .`
 
 Eventually this will be hosted on pip.
@@ -34,14 +34,21 @@ Once installed the package is accessible through the keyword `ew`. A call is str
 ew <option> <arguments>
 ```
 
+A full list of options can be found with `ew --help`, but the following are likely to be useful:
+
+* `--index/-i`: the index name to push to. If not specified at runtime, elastic-wikidata will prompt for it
+* `--limit/-l`: limit the number of records pushed into ES. You might want to use this for a small trial run before importing the whole thing.
+* `--properties/-prop`: pass a comma-separated list of properties to include in the ES index. E.g. *p31,p21*.
+* `--language/-lang`: [Wikimedia language code](https://www.wikidata.org/wiki/Help:Wikimedia_language_codes/lists/all). Only one supported at this time.
+
 ### Loading from Wikidata dump (.ndjson)
 
 ``` bash
 ew dump -p <path_to_json> <other_options>
 ```
 
-This is useful if you want to create one or more large subsets of Wikidata in different Elasticsearch indexes (millions of entities).
+This is useful if you want to create one or more large subsets of Wikidata in different Elasticsearch indexes (millions of entities). Loading all ~8million humans into an AWS Elasticsearch index took me about 20 minutes.
 
 1. Download the complete Wikidata dump (latest-all.json.gz from [here](https://dumps.wikimedia.org/wikidatawiki/entities/)). This is a *large* file: 87GB on 07/2020.
 2. Use [maxlath](https://github.com/maxlath)'s [wikibase-dump-filter](https://github.com/maxlath/wikibase-dump-filter/) to create a subset of the Wikidata dump.
-3. Run `ew dump` with flag `-p` pointing to the JSON subset. You might want to test it with a limit (using the `-l` flag) first, i.e. `-l 100` only imports the first 100 records.
+3. Run `ew dump` with flag `-p` pointing to the JSON subset. You might want to test it with a limit (using the `-l` flag) first.

@@ -15,7 +15,11 @@ from configparser import ConfigParser
 @click.option("--config", "-c", type=click.Path(exists=True))
 @click.option("--index", "-i", prompt="Elasticsearch index")
 @click.option("--limit", "-l", type=int)
-def main(source, path, cluster, user, password, config, index, limit):
+@click.option("--language", "-lang", type=str)
+@click.option("--properties", "-prop", type=str)
+def main(
+    source, path, cluster, user, password, config, index, limit, language, properties
+):
     # get elasticsearch credentials
     if config:
         # read .ini file
@@ -39,13 +43,19 @@ def main(source, path, cluster, user, password, config, index, limit):
 
     #  run job
     if source == "dump":
-        load_from_dump(path, es_credentials, index, limit)
+        kwargs = {}
+        if language:
+            kwargs["lang"] = language
+        if properties:
+            kwargs["properties"] = properties.split(",")
+        load_from_dump(path, es_credentials, index, limit, **kwargs)
     else:
         raise ValueError("source argument must be either dump or sparql")
 
 
-def load_from_dump(path, es_credentials, index, limit):
-    kwargs = {}
+def load_from_dump(path, es_credentials, index, limit, **kwargs):
+    if not kwargs:
+        kwargs = {}
     if limit:
         kwargs["doc_limit"] = limit
 
