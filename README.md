@@ -21,10 +21,11 @@ Eventually this will be hosted on pip.
 
 ## Setup
 
-elastic-wikidata needs the Elasticsearch credentials `ELASTICSEARCH_CLUSTER`, `ELASTICSEARCH_USER` and `ELASTICSEARCH_PASSWORD` to connect to your ES instance. You can set these in one of two ways:
+elastic-wikidata needs the Elasticsearch credentials `ELASTICSEARCH_CLUSTER`, `ELASTICSEARCH_USER` and `ELASTICSEARCH_PASSWORD` to connect to your ES instance. You can set these in one of three ways:
 
 1. Using environment variables: `export ELASTICSEARCH_CLUSTER=https://...` etc
 2. Using config.ini: pass the `-c` parameter followed by a path to an ini file containing your Elasticsearch credentials. [Example here](./config.sample.ini).
+3. Pass each variable in at runtime using options `--cluster/-c`, `--user/-u`, `--password/-p`.
 
 ## Usage
 

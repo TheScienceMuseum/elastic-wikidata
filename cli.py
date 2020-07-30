@@ -9,14 +9,37 @@ from configparser import ConfigParser
 @click.command()
 @click.argument("source", nargs=1)
 @click.option("--path", "-p", type=click.Path(exists=True))
-@click.option("--cluster", envvar="ELASTICSEARCH_CLUSTER")
-@click.option("--user", envvar="ELASTICSEARCH_USER")
-@click.option("--password", envvar="ELASTICSEARCH_PASSWORD")
-@click.option("--config", "-c", type=click.Path(exists=True))
-@click.option("--index", "-i", prompt="Elasticsearch index")
-@click.option("--limit", "-l", type=int)
-@click.option("--language", "-lang", type=str)
-@click.option("--properties", "-prop", type=str)
+@click.option(
+    "--cluster", envvar="ELASTICSEARCH_CLUSTER", help="Elasticsearch cluster URL"
+)
+@click.option("--user", envvar="ELASTICSEARCH_USER", help="Elasticsearch username")
+@click.option(
+    "--password", envvar="ELASTICSEARCH_PASSWORD", help="Elasticsearch password"
+)
+@click.option(
+    "--config",
+    "-c",
+    type=click.Path(exists=True),
+    help="Path to .ini file containing Elasticsearch credentials",
+)
+@click.option(
+    "--index",
+    "-i",
+    prompt="Elasticsearch index",
+    help="Name of Elasticsearch index to load into",
+)
+@click.option(
+    "--limit", "-l", type=int, help="(optional) Limit the number of entities loaded in"
+)
+@click.option(
+    "--language", "-lang", type=str, help="Language (Wikimedia language code)"
+)
+@click.option(
+    "--properties",
+    "-prop",
+    type=str,
+    help="One or more Wikidata property e.g. p31 or p31,p21. Not case-sensitive",
+)
 def main(
     source, path, cluster, user, password, config, index, limit, language, properties
 ):
