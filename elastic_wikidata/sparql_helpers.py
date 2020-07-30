@@ -46,7 +46,7 @@ def paginate_sparql_query(query: str, page_size: int):
 
     if "order by" not in query.lower():
         print(
-            "WARNING: no ORDER BY logic in the SPARQL query. This could result in incorrect pages."
+            "WARNING: no ORDER BY logic in the SPARQL query. This could result in duplicate or missing entities."
         )
 
     # paginate
