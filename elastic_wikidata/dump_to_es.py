@@ -3,17 +3,18 @@ from itertools import islice
 from tqdm.auto import tqdm
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import parallel_bulk
-from elastic_wikidata.config import config
 
 
 class processDump:
-    def __init__(self, dump_path: str, index_name: str, **kwargs):
+    def __init__(self, dump_path: str, es_credentials: dict, index_name: str, **kwargs):
         self.config = {
             "chunk_size": 1000,
             "queue_size": 8,
             "lang": "en",
             "properties": ["P31"],
         }
+
+        self.es_credentials = es_credentials
 
         self.dump_path = dump_path
         self.index_name = index_name
@@ -29,11 +30,16 @@ class processDump:
         are specified in config it uses those, otherwise uses a locally running Elasticsearch instance.
         """
 
-        if hasattr(config, "ELASTIC_SEARCH_CLUSTER"):
-            print(f"Connecting to Elasticsearch at {config.ELASTICSEARCH_CLUSTER}")
+        if "ELASTICSEARCH_CLUSTER" in self.es_credentials:
+            print(
+                f"Connecting to Elasticsearch at {self.es_credentials['ELASTICSEARCH_CLUSTER']}"
+            )
             self.es = Elasticsearch(
-                [config.ELASTICSEARCH_CLUSTER],
-                http_auth=(config.ELASTICSEARCH_USER, config.ELASTICSEARCH_PASSWORD),
+                [self.es_credentials["ELASTICSEARCH_CLUSTER"]],
+                http_auth=(
+                    self.es_credentials["ELASTICSEARCH_USER"],
+                    self.es_credentials["ELASTICSEARCH_PASSWORD"],
+                ),
             )
         else:
             # run on localhost
