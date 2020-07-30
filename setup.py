@@ -18,7 +18,7 @@ setuptools.setup(
     ],
     python_requires=">=3.6",
     packages=setuptools.find_packages(),
-    py_modules=["cli"],
+    py_modules=["cli", "elastic_wikidata"],
     entry_points="""
     [console_scripts]
     ew=cli:main

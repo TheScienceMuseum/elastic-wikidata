@@ -9,6 +9,7 @@ black = "*"
 pytest = "*"
 pylint = "*"
 flake8 = "*"
+jupyterlab = "*"
 
 [packages]
 elasticsearch = "*"
@@ -16,6 +17,7 @@ fastapi = "*"
 uvicorn = "*"
 click = "*"
 tqdm = "*"
+sparqlwrapper = "*"
 
 [requires]
 python_version = "3.7"
