@@ -1,6 +1,6 @@
 # Elastic Wikidata
 
-Simple CLI tools to load a subset of Wikidata into Elasticsearch.
+Simple CLI tools to load a subset of Wikidata into Elasticsearch. Part of the [Heritage Connector](https://www.sciencemuseumgroup.org.uk/project/heritage-connector/) project.
 
 - [Why?](#why)
 - [Installation](#installation)
@@ -78,5 +78,5 @@ For smaller collections of Wikidata entities it might be easier to populate an E
 
 **Time estimate:** Loading 10,000 entities into Wikidata into an AWS hosted Elasticsearch index took me about 6 minutes.
 
-1. Write a SPARQL query and save it to a text/`.rq` file. See [example](queries/humans.rq).
+1. Write a SPARQL query and save it to a text/.rq file. See [example](queries/humans.rq).
 2. Run `ew query` with the `-p` option pointing to the file containing the SPARQL query. Optionally add a `--page_size` for the SPARQL query.
