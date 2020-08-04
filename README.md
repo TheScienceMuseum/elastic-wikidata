@@ -20,6 +20,10 @@ There are a couple of reasons you may not want to do this when running searches 
 
 ## Installation
 
+from pypi: `pip install elastic_wikidata`
+
+from repo:
+
 1. Download
 2. `cd` into root
 3. `pip install .`
