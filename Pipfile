@@ -13,8 +13,6 @@ jupyterlab = "*"
 
 [packages]
 elasticsearch = "*"
-fastapi = "*"
-uvicorn = "*"
 click = "*"
 tqdm = "*"
 sparqlwrapper = "*"
