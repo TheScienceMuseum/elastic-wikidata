@@ -11,6 +11,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/TheScienceMuseum/elastic-wikidata",
+    download_url="https://github.com/TheScienceMuseum/elastic-wikidata/archive/v1.0.0.tar.gz",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
