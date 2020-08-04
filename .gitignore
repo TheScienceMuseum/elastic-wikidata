@@ -1,5 +1,6 @@
 # repo-specific
 config.ini
+experiments/
 
 # node
 node_modules/
