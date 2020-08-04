@@ -16,6 +16,7 @@ elasticsearch = "*"
 click = "*"
 tqdm = "*"
 sparqlwrapper = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"

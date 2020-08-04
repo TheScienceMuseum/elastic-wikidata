@@ -1,7 +1,7 @@
 import sys
 
 sys.path.append("..")
-from elastic_wikidata import dump_to_es
+from elastic_wikidata import dump_to_es, sparql_to_es
 import click
 from configparser import ConfigParser
 
@@ -31,6 +31,7 @@ from configparser import ConfigParser
 @click.option(
     "--limit", "-l", type=int, help="(optional) Limit the number of entities loaded in"
 )
+@click.option("--page_size", type=int, help="Page size for SPARQL query.", default=100)
 @click.option(
     "--language", "-lang", type=str, help="Language (Wikimedia language code)"
 )
@@ -41,7 +42,17 @@ from configparser import ConfigParser
     help="One or more Wikidata property e.g. p31 or p31,p21. Not case-sensitive",
 )
 def main(
-    source, path, cluster, user, password, config, index, limit, language, properties
+    source,
+    path,
+    cluster,
+    user,
+    password,
+    config,
+    index,
+    limit,
+    page_size,
+    language,
+    properties,
 ):
     # get elasticsearch credentials
     if config:
@@ -64,16 +75,20 @@ def main(
 
         check_es_credentials(es_credentials)
 
-    #  run job
+    # set kwargs
+    kwargs = {}
+    if language:
+        kwargs["lang"] = language
+    if properties:
+        kwargs["properties"] = properties.split(",")
+
+    # run job
     if source == "dump":
-        kwargs = {}
-        if language:
-            kwargs["lang"] = language
-        if properties:
-            kwargs["properties"] = properties.split(",")
         load_from_dump(path, es_credentials, index, limit, **kwargs)
+    elif source == "query":
+        load_from_sparql(path, es_credentials, index, limit, page_size, **kwargs)
     else:
-        raise ValueError("source argument must be either dump or sparql")
+        raise ValueError(f"Argument {source} must be either dump or sparql")
 
 
 def load_from_dump(path, es_credentials, index, limit, **kwargs):
@@ -82,8 +97,28 @@ def load_from_dump(path, es_credentials, index, limit, **kwargs):
     if limit:
         kwargs["doc_limit"] = limit
 
+    # limit is used when dumping JSON to Elasticsearch
     d = dump_to_es.processDump(
-        dump_path=path, es_credentials=es_credentials, index_name=index, **kwargs
+        dump=path, es_credentials=es_credentials, index_name=index, **kwargs
+    )
+    d.start_elasticsearch()
+    d.dump_to_es()
+
+
+def load_from_sparql(path, es_credentials, index, limit, page_size=100, **kwargs):
+    if not kwargs:
+        kwargs = {}
+
+    with open(path, "r") as f:
+        query = f.read()
+
+    # limit is used when getting list of entities
+    entity_list = sparql_to_es.get_entities_from_query(
+        query, page_size=100, limit=limit
+    )
+
+    d = dump_to_es.processDump(
+        dump=entity_list, es_credentials=es_credentials, index_name=index, **kwargs
     )
     d.start_elasticsearch()
     d.dump_to_es()

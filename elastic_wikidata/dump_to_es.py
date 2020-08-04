@@ -3,11 +3,15 @@ from itertools import islice
 from tqdm.auto import tqdm
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import parallel_bulk
+from typing import Union
 import re
+from elastic_wikidata.wd_entities import get_entities
 
 
 class processDump:
-    def __init__(self, dump_path: str, es_credentials: dict, index_name: str, **kwargs):
+    def __init__(
+        self, dump: Union[str, list], es_credentials: dict, index_name: str, **kwargs
+    ):
         self.config = {
             "chunk_size": 1000,
             "queue_size": 8,
@@ -17,7 +21,17 @@ class processDump:
 
         self.es_credentials = es_credentials
 
-        self.dump_path = dump_path
+        if isinstance(dump, str):
+            self.dump_path = dump
+            self.entities = None
+        elif isinstance(dump, list):
+            self.entities = dump
+            self.dump_path = None
+        else:
+            raise ValueError(
+                "dump must either be path to JSON dump or Python list of entitiess"
+            )
+
         self.index_name = index_name
 
         # process kwargs/set defaults
@@ -84,11 +98,18 @@ class processDump:
         print("Indexing documents...")
         successes = 0
         errors = []
+
+        # if dump_path, use generator that passes
+        if self.dump_path:
+            action_generator = self.generate_actions_from_dump()
+        elif self.entities:
+            action_generator = self.generate_actions_from_entities()
+
         for ok, action in tqdm(
             parallel_bulk(
                 client=self.es,
                 index=self.index_name,
-                actions=self.generate_actions(),
+                actions=action_generator,
                 chunk_size=self.config["chunk_size"],
                 queue_size=self.config["queue_size"],
             ),
@@ -133,7 +154,7 @@ class processDump:
 
         return newdoc
 
-    def generate_actions(self):
+    def generate_actions_from_dump(self):
         """
         Generator to yield a processed document from the Wikidata JSON dump. 
         Each line of the Wikidata JSON dump is a separate document. 
@@ -149,3 +170,17 @@ class processDump:
                 doc = self.process_doc(item)
 
                 yield doc
+
+    def generate_actions_from_entities(self):
+        """
+        Generator to yield processed document from list of entities. Calls are made to 
+        wbgetentities API with page size of 50 to retrieve documents.
+        """
+
+        json_generator = get_entities.result_generator(
+            self.entities, lang=self.wiki_options["lang"]
+        )
+
+        for page in json_generator:
+            for item in page:
+                yield self.process_doc(item)
