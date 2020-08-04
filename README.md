@@ -7,6 +7,7 @@ Simple CLI tools to load a subset of Wikidata into Elasticsearch.
 - [Setup](#setup)
 - [Usage](#usage)
   - [Loading from Wikidata dump (.ndjson)](#loading-from-wikidata-dump-ndjson)
+  - [Loading from SPARQL query](#loading-from-sparql-query)
 
 ## Why?
 
@@ -14,8 +15,8 @@ Running text search programmatically on Wikidata means using the MediaWiki query
 
 There are a couple of reasons you may not want to do this when running searches programmatically:
 
-* *time constraints/large volumes:* APIs are rate-limited, and you can only do one text search per SPARQL query
-* *better search:* using Elasticsearch allows for more flexible and powerful text search capabilities
+- *time constraints/large volumes:* APIs are rate-limited, and you can only do one text search per SPARQL query
+- *better search:* using Elasticsearch allows for more flexible and powerful text search capabilities
 
 ## Installation
 
@@ -38,15 +39,20 @@ elastic-wikidata needs the Elasticsearch credentials `ELASTICSEARCH_CLUSTER`, `E
 Once installed the package is accessible through the keyword `ew`. A call is structured as follows:
 
 ``` bash
-ew <option> <arguments>
+ew <task> <options>
 ```
+
+*Task* is either:
+
+- `dump`: [load data from Wikidata JSON dump](#loading-from-wikidata-dump-ndjson), or
+- `query`: [load data from SPARQL query](#loading-from-sparql-query).
 
 A full list of options can be found with `ew --help`, but the following are likely to be useful:
 
-* `--index/-i`: the index name to push to. If not specified at runtime, elastic-wikidata will prompt for it
-* `--limit/-l`: limit the number of records pushed into ES. You might want to use this for a small trial run before importing the whole thing.
-* `--properties/-prop`: pass a comma-separated list of properties to include in the ES index. E.g. *p31,p21*.
-* `--language/-lang`: [Wikimedia language code](https://www.wikidata.org/wiki/Help:Wikimedia_language_codes/lists/all). Only one supported at this time.
+- `--index/-i`: the index name to push to. If not specified at runtime, elastic-wikidata will prompt for it
+- `--limit/-l`: limit the number of records pushed into ES. You might want to use this for a small trial run before importing the whole thing.
+- `--properties/-prop`: pass a comma-separated list of properties to include in the ES index. E.g. *p31,p21*.
+- `--language/-lang`: [Wikimedia language code](https://www.wikidata.org/wiki/Help:Wikimedia_language_codes/lists/all). Only one supported at this time.
 
 ### Loading from Wikidata dump (.ndjson)
 
@@ -54,8 +60,23 @@ A full list of options can be found with `ew --help`, but the following are like
 ew dump -p <path_to_json> <other_options>
 ```
 
-This is useful if you want to create one or more large subsets of Wikidata in different Elasticsearch indexes (millions of entities). Loading all ~8million humans into an AWS Elasticsearch index took me about 20 minutes.
+This is useful if you want to create one or more large subsets of Wikidata in different Elasticsearch indexes (millions of entities).
+
+**Time estimate:** Loading all ~8million humans into an AWS Elasticsearch index took me about 20 minutes. Creating the humans subset using `wikibase-dump-filter` took about 3 hours using its [instructions for parallelising](https://github.com/maxlath/wikibase-dump-filter/blob/master/docs/parallelize.md).
 
 1. Download the complete Wikidata dump (latest-all.json.gz from [here](https://dumps.wikimedia.org/wikidatawiki/entities/)). This is a *large* file: 87GB on 07/2020.
 2. Use [maxlath](https://github.com/maxlath)'s [wikibase-dump-filter](https://github.com/maxlath/wikibase-dump-filter/) to create a subset of the Wikidata dump.
 3. Run `ew dump` with flag `-p` pointing to the JSON subset. You might want to test it with a limit (using the `-l` flag) first.
+
+### Loading from SPARQL query
+
+``` bash
+ew query <path_to_sparql_query> <other_options>
+```
+
+For smaller collections of Wikidata entities it might be easier to populate an Elasticsearch index directly from a SPARQL query rather than downloading the whole Wikidata dump to take a subset. `ew query` [automatically paginates SPARQL queries](examples/paginate%20query.ipynb) so that a heavy query like *'return all the humans'* doesn't result in a timeout error.
+
+**Time estimate:** Loading 10,000 entities into Wikidata into an AWS hosted Elasticsearch index took me about 6 minutes.
+
+1. Write a SPARQL query and save it to a text/`.rq` file. See [example](queries/humans.rq).
+2. Run `ew query` with the `-p` option pointing to the file containing the SPARQL query. Optionally add a `--page_size` for the SPARQL query.

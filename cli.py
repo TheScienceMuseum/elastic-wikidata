@@ -113,10 +113,14 @@ def load_from_sparql(path, es_credentials, index, limit, page_size=100, **kwargs
         query = f.read()
 
     # limit is used when getting list of entities
+    print(f"Getting entities from SPARQL query")
     entity_list = sparql_to_es.get_entities_from_query(
         query, page_size=100, limit=limit
     )
 
+    print(
+        f"Retrieving information from wbgetentities API and pushing to ES index {index}"
+    )
     d = dump_to_es.processDump(
         dump=entity_list, es_credentials=es_credentials, index_name=index, **kwargs
     )
