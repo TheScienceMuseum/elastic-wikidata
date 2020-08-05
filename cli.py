@@ -1,6 +1,3 @@
-import sys
-
-sys.path.append("..")
 from elastic_wikidata import dump_to_es, sparql_to_es
 import click
 from configparser import ConfigParser

@@ -26,7 +26,7 @@ from repo:
 
 1. Download
 2. `cd` into root
-3. `pip install .`
+3. `pip install -e .`
 
 Eventually this will be hosted on pip.
 
