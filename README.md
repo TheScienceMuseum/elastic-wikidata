@@ -18,7 +18,7 @@ There are a couple of reasons you may not want to do this when running searches 
 - *time constraints/large volumes:* APIs are rate-limited, and you can only do one text search per SPARQL query
 - *better search:* using Elasticsearch allows for more flexible and powerful text search capabilities.<sup>*</sup> We're using our own Elasticsearch instance to do nearest neighbour search on embeddings, too. 
 
-*<sup>*</sup> [CirrusSearch](https://www.mediawiki.org/wiki/Extension:CirrusSearch) is a Wikidata extension that enables direct search on Wikidata using Elasticsearch, if you require powerful search and are happy with the rate limit.*
+*<sup>&ast;</sup> [CirrusSearch](https://www.mediawiki.org/wiki/Extension:CirrusSearch) is a Wikidata extension that enables direct search on Wikidata using Elasticsearch, if you require powerful search and are happy with the rate limit.*
 
 ## Installation
 
