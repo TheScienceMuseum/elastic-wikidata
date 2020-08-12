@@ -30,8 +30,6 @@ from repo:
 2. `cd` into root
 3. `pip install -e .`
 
-Eventually this will be hosted on pip.
-
 ## Setup
 
 elastic-wikidata needs the Elasticsearch credentials `ELASTICSEARCH_CLUSTER`, `ELASTICSEARCH_USER` and `ELASTICSEARCH_PASSWORD` to connect to your ES instance. You can set these in one of three ways:
