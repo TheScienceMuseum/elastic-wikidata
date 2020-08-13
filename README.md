@@ -1,6 +1,3 @@
-![GitHub last commit](https://img.shields.io/github/last-commit/thesciencemuseum/elastic-wikidata)
-![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/thesciencemuseum/elastic-wikidata)
-
 # Elastic Wikidata
 
 Simple CLI tools to load a subset of Wikidata into Elasticsearch. Part of the [Heritage Connector](https://www.sciencemuseumgroup.org.uk/project/heritage-connector/) project.
@@ -11,6 +8,11 @@ Simple CLI tools to load a subset of Wikidata into Elasticsearch. Part of the [H
 - [Usage](#usage)
   - [Loading from Wikidata dump (.ndjson)](#loading-from-wikidata-dump-ndjson)
   - [Loading from SPARQL query](#loading-from-sparql-query)
+  
+</br>
+  
+![GitHub last commit](https://img.shields.io/github/last-commit/thesciencemuseum/elastic-wikidata)
+![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/thesciencemuseum/elastic-wikidata)
 
 ## Why?
 
