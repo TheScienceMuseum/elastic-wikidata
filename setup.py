@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="elastic-wikidata",
-    version="0.2.0",
+    version="0.2.1",
     author="Science Musuem Group",
     description="elastic-wikidata",
     long_description=long_description,
