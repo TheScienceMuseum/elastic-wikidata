@@ -10,7 +10,8 @@ Simple CLI tools to load a subset of Wikidata into Elasticsearch. Part of the [H
   - [Loading from SPARQL query](#loading-from-sparql-query)
   
 </br>
-  
+
+![PyPI - Downloads](https://img.shields.io/pypi/dm/elastic-wikidata)
 ![GitHub last commit](https://img.shields.io/github/last-commit/thesciencemuseum/elastic-wikidata)
 ![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/thesciencemuseum/elastic-wikidata)
 
