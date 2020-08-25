@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="elastic-wikidata",
-    version="0.2.1",
-    author="Science Musuem Group",
+    version="0.2.2",
+    author="Science Museum Group",
     description="elastic-wikidata",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -26,6 +26,7 @@ setuptools.setup(
         "requests==2.24.0",
     ],
     py_modules=["cli", "elastic_wikidata"],
+    packages=["elastic_wikidata"],
     entry_points="""
     [console_scripts]
     ew=cli:main
