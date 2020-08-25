@@ -29,7 +29,7 @@ class processDump:
             self.dump_path = None
         else:
             raise ValueError(
-                "dump must either be path to JSON dump or Python list of entitiess"
+                "dump must either be path to JSON dump or Python list of entities"
             )
 
         self.index_name = index_name
