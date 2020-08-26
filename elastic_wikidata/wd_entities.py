@@ -2,6 +2,8 @@ import requests
 from tqdm.auto import tqdm
 from typing import List, Union
 from math import ceil
+from elastic_wikidata.http import generate_user_agent
+from elastic_wikidata.config import runtime_config
 
 
 class get_entities:
@@ -36,7 +38,7 @@ class get_entities:
         return "%7C".join(params) if len(params) > 1 else params[0]
 
     @classmethod
-    def get_all_results(self, qcodes, lang="en", page_limit=50, timeout=3) -> list:
+    def get_all_results(self, qcodes, lang="en", page_limit=50) -> list:
         """
         Get response through the `wbgetentities` API. 
 
@@ -44,7 +46,7 @@ class get_entities:
             list: each item is a the response for an entity
         """
 
-        results = self().result_generator(qcodes, lang, page_limit, timeout)
+        results = self().result_generator(qcodes, lang, page_limit)
 
         all_results = []
 
@@ -56,7 +58,7 @@ class get_entities:
         return all_results
 
     @classmethod
-    def result_generator(self, qcodes, lang="en", page_limit=50, timeout=3) -> list:
+    def result_generator(self, qcodes, lang="en", page_limit=50) -> list:
         """
         Get response through the `wbgetentities` API. Yields `page_limit` entities at a time.
 
@@ -71,11 +73,12 @@ class get_entities:
             qcodes[i : i + page_limit] for i in range(0, len(qcodes), page_limit)
         ]
 
-        headers = {
-            "User-Agent": "Elastic Wikidata/0.1",
-        }
+        headers = {"User-Agent": generate_user_agent()}
+        timeout = runtime_config.get("http_timeout")
+
+        s = requests.Session()
 
         for page in qcodes_paginated:
             url = f"http://www.wikidata.org/w/api.php?action=wbgetentities&format=json&ids={self._param_join(page)}&props={self._param_join(self().properties)}&languages={lang}&languagefallback=1&formatversion=2"
-            response = requests.get(url, headers=headers, timeout=timeout).json()
+            response = s.get(url, headers=headers, timeout=timeout).json()
             yield [v for _, v in response["entities"].items()]

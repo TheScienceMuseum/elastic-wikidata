@@ -1,8 +1,9 @@
-from elastic_wikidata.sparql_helpers import run_query, paginate_sparql_query
 import re
 from math import ceil
 from itertools import islice
 from tqdm.auto import tqdm
+from elastic_wikidata.sparql_helpers import run_query, paginate_sparql_query
+from elastic_wikidata.http import generate_user_agent
 
 
 def url_to_qid(url: str) -> str:

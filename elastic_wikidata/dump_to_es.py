@@ -15,8 +15,6 @@ class processDump:
         self.config = {
             "chunk_size": 1000,
             "queue_size": 8,
-            "lang": "en",
-            "properties": ["P31"],
         }
 
         self.wd_type_mapping = {
@@ -52,6 +50,11 @@ class processDump:
             self.wiki_options["lang"] = kwargs["lang"]
         else:
             self.wiki_options["lang"] = "en"
+
+        if "user_agent_contact" in kwargs:
+            self.user_agent_contact = kwargs["user_agent_contact"]
+        else:
+            self.user_agent_contact = None
 
         def wiki_property_check(p):
             if len(re.findall(r"(p\d+)", p.lower())) == 1:

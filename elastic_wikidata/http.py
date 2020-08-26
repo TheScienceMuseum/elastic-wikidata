@@ -2,11 +2,13 @@ import requests
 import sys
 from urllib.parse import quote
 from elastic_wikidata import __version__ as ew_version
+from elastic_wikidata.config import runtime_config
 
 
-def generate_user_agent(contact_information: str = None):
+def generate_user_agent():
     """
     Generates user agent string according to Wikidata User Agent Guidelines (https://meta.wikimedia.org/wiki/User-Agent_policy).
+    Uses contact information from `runtime_config.get('user_agent_contact')`.
 
     Returns:
         str: user agent string
@@ -16,6 +18,8 @@ def generate_user_agent(contact_information: str = None):
         "http_backend": "requests/" + requests.__version__,
         "ew": "Elastic Wikidata bot/" + ew_version,
     }
+
+    contact_information = runtime_config.get("user_agent_contact")
 
     if contact_information is not None:
         contact_information = " ".join(
