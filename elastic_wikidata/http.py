@@ -27,9 +27,10 @@ def generate_user_agent():
         )
         return f"{v_params['ew']} ({contact_information}) {v_params['http_backend']} {v_params['python']}"
     else:
-        print(
-            "WARNING: please consider adding contact information to config.ini to improve the User Agent header for Wikidata requests."
-        )
+        if runtime_config.get("cli"):
+            print(
+                "WARNING: please consider adding contact information through config.ini or the -contact flag to improve the User Agent header for Wikidata requests."
+            )
         return f"{v_params['ew']} {v_params['http_backend']} {v_params['python']}"
 
 

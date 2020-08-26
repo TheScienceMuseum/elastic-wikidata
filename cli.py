@@ -102,6 +102,9 @@ def main(
 
     runtime_config.add_item({"http_timeout": timeout})
 
+    # global flag for all functions that the module is being run through the CLI
+    runtime_config.add_item({"cli": True})
+
     # set kwargs
     kwargs = {}
     if language:
