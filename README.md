@@ -8,6 +8,12 @@ Simple CLI tools to load a subset of Wikidata into Elasticsearch. Part of the [H
 - [Usage](#usage)
   - [Loading from Wikidata dump (.ndjson)](#loading-from-wikidata-dump-ndjson)
   - [Loading from SPARQL query](#loading-from-sparql-query)
+  
+</br>
+
+![PyPI - Downloads](https://img.shields.io/pypi/dm/elastic-wikidata)
+![GitHub last commit](https://img.shields.io/github/last-commit/thesciencemuseum/elastic-wikidata)
+![GitHub Pipenv locked Python version](https://img.shields.io/github/pipenv/locked/python-version/thesciencemuseum/elastic-wikidata)
 
 ## Why?
 
@@ -16,7 +22,9 @@ Running text search programmatically on Wikidata means using the MediaWiki query
 There are a couple of reasons you may not want to do this when running searches programmatically:
 
 - *time constraints/large volumes:* APIs are rate-limited, and you can only do one text search per SPARQL query
-- *better search:* using Elasticsearch allows for more flexible and powerful text search capabilities
+- *better search:* using Elasticsearch allows for more flexible and powerful text search capabilities.<sup>*</sup> We're using our own Elasticsearch instance to do nearest neighbour search on embeddings, too. 
+
+*<sup>&ast;</sup> [CirrusSearch](https://www.mediawiki.org/wiki/Extension:CirrusSearch) is a Wikidata extension that enables direct search on Wikidata using Elasticsearch, if you require powerful search and are happy with the rate limit.*
 
 ## Installation
 
@@ -27,8 +35,6 @@ from repo:
 1. Download
 2. `cd` into root
 3. `pip install -e .`
-
-Eventually this will be hosted on pip.
 
 ## Setup
 
