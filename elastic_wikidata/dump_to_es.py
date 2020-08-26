@@ -4,8 +4,11 @@ from tqdm.auto import tqdm
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import parallel_bulk
 from typing import Union
-import re
-from elastic_wikidata.wd_entities import get_entities
+from elastic_wikidata.wd_entities import (
+    get_entities,
+    wiki_property_check,
+    simplify_wbgetentities_result,
+)
 
 
 class processDump:
@@ -15,12 +18,6 @@ class processDump:
         self.config = {
             "chunk_size": 1000,
             "queue_size": 8,
-        }
-
-        self.wd_type_mapping = {
-            "wikibase-entityid": "id",
-            "time": "time",
-            "monolingualtext": "text",
         }
 
         self.es_credentials = es_credentials
@@ -55,13 +52,6 @@ class processDump:
             self.user_agent_contact = kwargs["user_agent_contact"]
         else:
             self.user_agent_contact = None
-
-        def wiki_property_check(p):
-            if len(re.findall(r"(p\d+)", p.lower())) == 1:
-                return True
-            else:
-                print(f"WARNING: property {p} is not a valid Wikidata property")
-                return False
 
         if "properties" in kwargs:
             if isinstance(kwargs["properties"], str) and wiki_property_check(
@@ -136,39 +126,7 @@ class processDump:
         lang = self.wiki_options["lang"]
         properties = self.wiki_options["properties"]
 
-        newdoc = {"id": doc["id"]}
-
-        # add label(s)
-        if lang in doc["labels"]:
-            newdoc["labels"] = doc["labels"][lang]["value"]
-
-        # add descriptions(s)
-        if lang in doc["descriptions"]:
-            newdoc["descriptions"] = doc["descriptions"][lang]["value"]
-
-        # add aliases
-        if (len(doc["aliases"]) > 0) and (lang in doc["aliases"]):
-            newdoc["aliases"] = [i["value"] for i in doc["aliases"][lang]]
-        else:
-            newdoc["aliases"] = []
-
-        # add claims (property values)
-        newdoc["claims"] = {}
-
-        for p in properties:
-            if p in doc["claims"]:
-                claims = []
-                for i in doc["claims"][p]:
-                    value_type = i["mainsnak"]["datavalue"]["type"]
-                    if value_type == "string":
-                        claims.append(i["mainsnak"]["datavalue"]["value"])
-                    else:
-                        value_name = self.wd_type_mapping[value_type]
-                        claims.append(i["mainsnak"]["datavalue"]["value"][value_name])
-
-                newdoc["claims"][p] = claims if len(claims) > 1 else claims[0]
-
-        return newdoc
+        return simplify_wbgetentities_result(doc, lang, properties)
 
     def generate_actions_from_dump(self):
         """
