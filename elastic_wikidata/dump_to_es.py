@@ -19,6 +19,12 @@ class processDump:
             "properties": ["P31"],
         }
 
+        self.wd_type_mapping = {
+            "wikibase-entityid": "id",
+            "time": "time",
+            "monolingualtext": "text",
+        }
+
         self.es_credentials = es_credentials
 
         if isinstance(dump, str):
@@ -148,9 +154,16 @@ class processDump:
 
         for p in properties:
             if p in doc["claims"]:
-                newdoc["claims"][p] = [
-                    i["mainsnak"]["datavalue"]["value"]["id"] for i in doc["claims"][p]
-                ]
+                claims = []
+                for i in doc["claims"][p]:
+                    value_type = i["mainsnak"]["datavalue"]["type"]
+                    if value_type == "string":
+                        claims.append(i["mainsnak"]["datavalue"]["value"])
+                    else:
+                        value_name = self.wd_type_mapping[value_type]
+                        claims.append(i["mainsnak"]["datavalue"]["value"][value_name])
+
+                newdoc["claims"][p] = claims if len(claims) > 1 else claims[0]
 
         return newdoc
 
