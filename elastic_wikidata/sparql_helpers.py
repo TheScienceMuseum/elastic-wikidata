@@ -1,6 +1,7 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 import urllib
 import time
+from elastic_wikidata.http import generate_user_agent
 
 
 def run_query(query: str, endpoint_url="https://query.wikidata.org/sparql") -> dict:
@@ -14,13 +15,14 @@ def run_query(query: str, endpoint_url="https://query.wikidata.org/sparql") -> d
     Returns:
         query_result (dict): the JSON result of the query as a dict
     """
-    sparql = SPARQLWrapper(endpoint_url)
+
+    user_agent = generate_user_agent()
+
+    sparql = SPARQLWrapper(endpoint_url, agent=user_agent)
     sparql.setQuery(query)
     sparql.setMethod("POST")
     sparql.setReturnFormat(JSON)
-    sparql.addCustomHttpHeader(
-        "User-Agent", "Elastic Wikidata/0.1 (Science Museum Group)",
-    )
+
     try:
         return sparql.query().convert()
     except urllib.error.HTTPError as e:

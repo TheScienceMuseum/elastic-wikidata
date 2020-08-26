@@ -81,7 +81,7 @@ This is useful if you want to create one or more large subsets of Wikidata in di
 ### Loading from SPARQL query
 
 ``` bash
-ew query <path_to_sparql_query> <other_options>
+ew query -p <path_to_sparql_query> <other_options>
 ```
 
 For smaller collections of Wikidata entities it might be easier to populate an Elasticsearch index directly from a SPARQL query rather than downloading the whole Wikidata dump to take a subset. `ew query` [automatically paginates SPARQL queries](examples/paginate%20query.ipynb) so that a heavy query like *'return all the humans'* doesn't result in a timeout error.

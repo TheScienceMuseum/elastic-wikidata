@@ -1,0 +1,1 @@
+from elastic_wikidata.__metadata__ import __version__

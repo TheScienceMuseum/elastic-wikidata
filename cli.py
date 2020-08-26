@@ -1,4 +1,5 @@
 from elastic_wikidata import dump_to_es, sparql_to_es
+from elastic_wikidata.config import runtime_config
 import click
 from configparser import ConfigParser
 
@@ -12,6 +13,13 @@ from configparser import ConfigParser
 @click.option("--user", envvar="ELASTICSEARCH_USER", help="Elasticsearch username")
 @click.option(
     "--password", envvar="ELASTICSEARCH_PASSWORD", help="Elasticsearch password"
+)
+@click.option(
+    "--agent_contact",
+    "-contact",
+    envvar="WIKIMEDIA_AGENT_CONTACT",
+    help="(optional) Contact details to add to the User Agent header for Wikidata requests",
+    default=None,
 )
 @click.option(
     "--config",
@@ -38,19 +46,29 @@ from configparser import ConfigParser
     type=str,
     help="One or more Wikidata property e.g. p31 or p31,p21. Not case-sensitive",
 )
+@click.option(
+    "--timeout",
+    "-t",
+    type=int,
+    help="Timeout for Wikidata requests (seconds)",
+    default=6,
+)
 def main(
     source,
     path,
     cluster,
     user,
     password,
+    agent_contact,
     config,
     index,
     limit,
     page_size,
     language,
     properties,
+    timeout,
 ):
+
     # get elasticsearch credentials
     if config:
         # read .ini file
@@ -59,6 +77,14 @@ def main(
         parser.read(config)
         es_credentials = parser._sections["ELASTIC"]
         check_es_credentials(es_credentials)
+
+        runtime_config.add_item(
+            {
+                "user_agent_contact": parser._sections["HTTP"].get(
+                    "CONTACT_DETAILS", None
+                )
+            }
+        )
     else:
         # check environment variables/flags
         es_credentials = {}
@@ -71,6 +97,13 @@ def main(
             es_credentials["ELASTICSEARCH_PASSWORD"] = password
 
         check_es_credentials(es_credentials)
+
+        runtime_config.add_item({"user_agent_contact": agent_contact})
+
+    runtime_config.add_item({"http_timeout": timeout})
+
+    # global flag for all functions that the module is being run through the CLI
+    runtime_config.add_item({"cli": True})
 
     # set kwargs
     kwargs = {}
