@@ -138,12 +138,15 @@ def simplify_wbgetentities_result(
         if p in doc["claims"]:
             claims = []
             for i in doc["claims"][p]:
-                value_type = i["mainsnak"]["datavalue"]["type"]
-                if value_type == "string":
-                    claims.append(i["mainsnak"]["datavalue"]["value"])
-                else:
-                    value_name = wd_type_mapping[value_type]
-                    claims.append(i["mainsnak"]["datavalue"]["value"][value_name])
+                try:
+                    value_type = i["mainsnak"]["datavalue"]["type"]
+                    if value_type == "string":
+                        claims.append(i["mainsnak"]["datavalue"]["value"])
+                    else:
+                        value_name = wd_type_mapping[value_type]
+                        claims.append(i["mainsnak"]["datavalue"]["value"][value_name])
+                except KeyError:
+                    pass
 
             newdoc["claims"][p] = claims
 
