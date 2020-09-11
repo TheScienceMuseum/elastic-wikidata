@@ -53,6 +53,12 @@ from configparser import ConfigParser
     help="Timeout for Wikidata requests (seconds)",
     default=6,
 )
+@click.option(
+    "--disable_refresh/--no_disable_refresh",
+    "-dr/-ndr",
+    help="Whether to disable CPU-intensive refresh on load. Defaults to True. Recommended to leave this on for low-resource machines or large datasets.",
+    default=True,
+)
 def main(
     source,
     path,
@@ -67,6 +73,7 @@ def main(
     language,
     properties,
     timeout,
+    disable_refresh,
 ):
 
     # get elasticsearch credentials
@@ -111,6 +118,8 @@ def main(
         kwargs["lang"] = language
     if properties:
         kwargs["properties"] = properties.split(",")
+    if disable_refresh:
+        kwargs["disable_refresh_on_index"] = disable_refresh
 
     # run job
     if source == "dump":
@@ -172,4 +181,19 @@ def check_es_credentials(credentials: dict):
 
 
 if __name__ == "__main__":
+    # main(
+    #     source='dump',
+    #     path="../wikidata/all_no_articles.ndjson",
+    #     properties="p31,p279",
+    #     config="./config.ini",
+    #     index='wikidump',
+    #     cluster=None,
+    #     user=None,
+    #     password=None,
+    #     agent_contact=False,
+    #     limit=None,
+    #     page_size=100,
+    #     language='en',
+    #     timeout=6,
+    # )
     main()
