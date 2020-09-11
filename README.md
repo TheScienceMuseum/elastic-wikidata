@@ -8,6 +8,7 @@ Simple CLI tools to load a subset of Wikidata into Elasticsearch. Part of the [H
 - [Usage](#usage)
   - [Loading from Wikidata dump (.ndjson)](#loading-from-wikidata-dump-ndjson)
   - [Loading from SPARQL query](#loading-from-sparql-query)
+  - [Temporary side effects](#temporary-side-effects)
   
 </br>
 
@@ -90,3 +91,7 @@ For smaller collections of Wikidata entities it might be easier to populate an E
 
 1. Write a SPARQL query and save it to a text/.rq file. See [example](queries/humans.rq).
 2. Run `ew query` with the `-p` option pointing to the file containing the SPARQL query. Optionally add a `--page_size` for the SPARQL query.
+
+### Temporary side effects
+
+As of version *0.3.1* refreshing the search index is disabled for the duration of load by default, as [recommended by ElasticSearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/tune-for-indexing-speed.html#_unset_or_increase_the_refresh_interval). Refresh is re-enabled to the default interval of `1s` after load is complete. To disable this behaviour use the flag `--no_disable_refresh/-ndr`.
