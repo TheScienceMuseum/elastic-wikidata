@@ -36,6 +36,8 @@ class processDump:
         self.index_name = index_name
 
         # process kwargs/set defaults
+        self.disable_refresh_on_index = kwargs["disable_refresh_on_index"]
+
         if "doc_limit" in kwargs:
             self.doc_limit = kwargs["doc_limit"]
         else:
@@ -93,6 +95,12 @@ class processDump:
 
         self.es.indices.create(index=self.index_name, ignore=400)
 
+        if self.disable_refresh_on_index:
+            print(
+                "Temporary disabling refresh for the index. Will reset refresh interval for the default (1s) after load is complete."
+            )
+            self.es.indices.put_settings({"index": {"refresh_interval": -1}})
+
     def dump_to_es(self):
         print("Indexing documents...")
         successes = 0
@@ -117,6 +125,11 @@ class processDump:
                 print(action)
                 errors.append(action)
             successes += ok
+
+        if self.disable_refresh_on_index:
+            # reset back to default
+            print("Refresh interval set back to default of 1s.")
+            self.es.indices.put_settings({"index": {"refresh_interval": "1s"}})
 
     def process_doc(self, doc: dict) -> dict:
         """
