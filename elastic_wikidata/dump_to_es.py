@@ -93,11 +93,21 @@ class processDump:
             print("Connecting to Elasticsearch on localhost")
             self.es = Elasticsearch()
 
-        self.es.indices.create(index=self.index_name, ignore=400)
+        mappings = {
+            "mappings": {
+                "properties": {
+                    "labels": {"type": "text", "copy_to": "labels_aliases"},
+                    "aliases": {"type": "text", "copy_to": "labels_aliases"},
+                    "labels_aliases": {"type": "text", "store": "true"},
+                }
+            }
+        }
+
+        self.es.indices.create(index=self.index_name, ignore=400, body=mappings)
 
         if self.disable_refresh_on_index:
             print(
-                "Temporary disabling refresh for the index. Will reset refresh interval for the default (1s) after load is complete."
+                "Temporary disabling refresh for the index. Will reset refresh interval to the default (1s) after load is complete."
             )
             self.es.indices.put_settings({"index": {"refresh_interval": -1}})
 

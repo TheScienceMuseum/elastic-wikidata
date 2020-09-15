@@ -2,6 +2,10 @@
 
 All notable changes documented below.
 
+## 0.3.2
+
+- **enhancement:** add `labels_aliases` field for faster text search of both labels and aliases using an [Elasticsearch match query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html)
+
 ## 0.3.1
 
 - **fix:** property values without types are ignored

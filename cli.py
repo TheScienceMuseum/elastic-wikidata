@@ -186,7 +186,7 @@ if __name__ == "__main__":
     #     path="../wikidata/all_no_articles.ndjson",
     #     properties="p31,p279",
     #     config="./config.ini",
-    #     index='wikidump',
+    #     index='wikidump2',
     #     cluster=None,
     #     user=None,
     #     password=None,
@@ -195,5 +195,6 @@ if __name__ == "__main__":
     #     page_size=100,
     #     language='en',
     #     timeout=6,
+    #     disable_refresh=True
     # )
     main()
