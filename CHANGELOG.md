@@ -2,6 +2,10 @@
 
 All notable changes documented below.
 
+## 0.3.4
+
+- **enhancement:** `wd_entities.get_entities` now has a `get_labels` method to get labels for a list of QIDs in a particular language using the wbgetentities API.
+
 ## 0.3.2
 
 - **enhancement:** add `labels_aliases` field for faster text search of both labels and aliases using an [Elasticsearch match query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html)
