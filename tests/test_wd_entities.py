@@ -31,3 +31,16 @@ def test_get_labels(ge):
         "Q706475": "Steve McQueen",
         "Q82340": "",
     }
+
+
+def test_simplify_wbgetentities_result(ge):
+    res = ge.get_all_results(["Q203545", "Q706475", "Q18637243"])
+    pids = ["P31", "P21", "P735", "P734", "P1971"]
+
+    res_simplified = [
+        wd_entities.simplify_wbgetentities_result(doc, lang="en", properties=pids)
+        for doc in res
+    ]
+
+    assert [doc["claims"]["P31"] == ["Q5"] for doc in res_simplified]
+    assert res_simplified[1]["claims"]["P1971"][0] == "+2"

@@ -132,6 +132,7 @@ def simplify_wbgetentities_result(
         "wikibase-entityid": "id",
         "time": "time",
         "monolingualtext": "text",
+        "quantity": "amount",
     }
 
     newdoc = {"id": doc["id"]}

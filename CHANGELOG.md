@@ -2,6 +2,10 @@
 
 All notable changes documented below.
 
+## 0.3.5
+
+- **fix:** `wd_entities.simplify_wbgetentities_result` can handle type *quantity*, and returns the value of *amount*.
+
 ## 0.3.4
 
 - **enhancement:** `wd_entities.get_entities` now has a `get_labels` method to get labels for a list of QIDs in a particular language using the wbgetentities API.
