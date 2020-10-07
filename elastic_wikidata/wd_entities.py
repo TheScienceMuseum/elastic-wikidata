@@ -89,6 +89,25 @@ class get_entities:
                 response = s.get(url, headers=headers, timeout=timeout).json()
                 yield [v for _, v in response["entities"].items()]
 
+    def get_labels(self, qcodes, lang="en", page_limit=50, timeout: int = None) -> dict:
+        """
+        Get labels from Wikidata qcodes. If the item associated with a qcode has no label, its value
+        in the dictionary is an empty string.
+
+        Returns:
+            dict: {qid1: label1, qid2: label2, ...}
+        """
+
+        qid_label_mapping = dict()
+        qcodes = list(set(qcodes))
+
+        docs = self.get_all_results(qcodes, lang, page_limit, timeout)
+
+        for doc in docs:
+            qid_label_mapping[doc["id"]] = doc["labels"].get(lang, {}).get("value", "")
+
+        return qid_label_mapping
+
 
 def simplify_wbgetentities_result(
     doc: Union[dict, List[dict]], lang: str, properties: list
