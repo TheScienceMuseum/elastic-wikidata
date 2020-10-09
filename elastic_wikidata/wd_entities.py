@@ -110,7 +110,10 @@ class get_entities:
 
 
 def simplify_wbgetentities_result(
-    doc: Union[dict, List[dict]], lang: str, properties: list
+    doc: Union[dict, List[dict]],
+    lang: str,
+    properties: list,
+    use_redirected_qid: bool = False,
 ) -> Union[dict, List[dict]]:
     """
     Processes a single document or set of documents from the JSON result of wbgetentities, returning a simplified version of that document. 
@@ -119,6 +122,8 @@ def simplify_wbgetentities_result(
         doc (Union[dict, List[dict]]): JSON result from Wikidata wbgetentities API
         lang (str): Wikimedia language code
         properties (list): list of Wikidata properties
+        use_redirected_qid (bool, optional): whether to return the redirected QID value under the 'id' field instead of the original QID 
+            if there is one. Defaults to False.
 
     Returns:
         Union[dict, List[dict]]: dict if single record passed in; list if multiple records
@@ -135,18 +140,26 @@ def simplify_wbgetentities_result(
         "quantity": "amount",
     }
 
-    newdoc = {"id": doc["id"]}
+    # check for redirected URL
+    if "redirects" in doc:
+        if use_redirected_qid:
+            newdoc = {"id": doc["redirects"]["to"]}
+        else:
+            newdoc = {"id": doc["redirects"]["from"]}
+
+    else:
+        newdoc = {"id": doc["id"]}
 
     # add label(s)
-    if lang in doc["labels"]:
+    if lang in doc.get("labels", {}):
         newdoc["labels"] = doc["labels"][lang]["value"]
 
     # add descriptions(s)
-    if lang in doc["descriptions"]:
+    if lang in doc.get("descriptions", {}):
         newdoc["descriptions"] = doc["descriptions"][lang]["value"]
 
     # add aliases
-    if (len(doc["aliases"]) > 0) and (lang in doc["aliases"]):
+    if (len(doc.get("aliases", {})) > 0) and (lang in doc.get("aliases", {})):
         newdoc["aliases"] = [i["value"] for i in doc["aliases"][lang]]
     else:
         newdoc["aliases"] = []
@@ -154,21 +167,24 @@ def simplify_wbgetentities_result(
     # add claims (property values)
     newdoc["claims"] = {}
 
-    for p in properties:
-        if p in doc["claims"]:
-            claims = []
-            for i in doc["claims"][p]:
-                try:
-                    value_type = i["mainsnak"]["datavalue"]["type"]
-                    if value_type == "string":
-                        claims.append(i["mainsnak"]["datavalue"]["value"])
-                    else:
-                        value_name = wd_type_mapping[value_type]
-                        claims.append(i["mainsnak"]["datavalue"]["value"][value_name])
-                except KeyError:
-                    pass
+    if "claims" in doc:
+        for p in properties:
+            if p in doc["claims"]:
+                claims = []
+                for i in doc["claims"][p]:
+                    try:
+                        value_type = i["mainsnak"]["datavalue"]["type"]
+                        if value_type == "string":
+                            claims.append(i["mainsnak"]["datavalue"]["value"])
+                        else:
+                            value_name = wd_type_mapping[value_type]
+                            claims.append(
+                                i["mainsnak"]["datavalue"]["value"][value_name]
+                            )
+                    except KeyError:
+                        pass
 
-            newdoc["claims"][p] = claims
+                newdoc["claims"][p] = claims
 
     return newdoc
 
