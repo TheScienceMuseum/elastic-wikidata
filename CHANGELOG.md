@@ -2,6 +2,11 @@
 
 All notable changes documented below.
 
+## 0.3.6
+
+- **fix:** handles documents which are missing any of *labels/aliases/descriptions/claims* fields.
+- **enhancement:** `wd_entities.simplify_wbgetentities_result` gives the option to return the redirected QID for Wikidata pages which redirect. By default it returns the undirected QID: the same one that was passed into the function.
+
 ## 0.3.5
 
 - **fix:** `wd_entities.simplify_wbgetentities_result` can handle type *quantity*, and returns the value of *amount*.
