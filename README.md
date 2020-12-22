@@ -76,7 +76,7 @@ This is useful if you want to create one or more large subsets of Wikidata in di
 **Time estimate:** Loading all ~8million humans into an AWS Elasticsearch index took me about 20 minutes. Creating the humans subset using `wikibase-dump-filter` took about 3 hours using its [instructions for parallelising](https://github.com/maxlath/wikibase-dump-filter/blob/master/docs/parallelize.md).
 
 1. Download the complete Wikidata dump (latest-all.json.gz from [here](https://dumps.wikimedia.org/wikidatawiki/entities/)). This is a *large* file: 87GB on 07/2020.
-2. Use [maxlath](https://github.com/maxlath)'s [wikibase-dump-filter](https://github.com/maxlath/wikibase-dump-filter/) to create a subset of the Wikidata dump.
+2. Use [maxlath](https://github.com/maxlath)'s [wikibase-dump-filter](https://github.com/maxlath/wikibase-dump-filter/) to create a subset of the Wikidata dump. **Note: don't use the `--simplify` flag when running the dump. elastic-wikidata will take care of simplification.**
 3. Run `ew dump` with flag `-p` pointing to the JSON subset. You might want to test it with a limit (using the `-l` flag) first.
 
 ### Loading from SPARQL query
