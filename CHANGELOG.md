@@ -2,6 +2,8 @@
 
 All notable changes documented below.
 
+## 0.3.7
+- **fix:** reading from JSON dump forces utf-8
 ## 0.3.6
 
 - **fix:** handles documents which are missing any of *labels/aliases/descriptions/claims* fields.
