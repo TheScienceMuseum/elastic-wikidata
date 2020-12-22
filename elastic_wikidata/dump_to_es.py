@@ -156,7 +156,7 @@ class processDump:
         Generator to yield a processed document from the Wikidata JSON dump. 
         Each line of the Wikidata JSON dump is a separate document. 
         """
-        with open(self.dump_path) as f:
+        with open(self.dump_path, "r", encoding="utf-8") as f:
             objects = (json.loads(line) for line in f)
 
             # optionally limit number that are loaded
