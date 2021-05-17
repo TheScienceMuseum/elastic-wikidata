@@ -56,7 +56,7 @@ from configparser import ConfigParser
 @click.option(
     "--disable_refresh/--no_disable_refresh",
     "-dr/-ndr",
-    help="Whether to disable CPU-intensive refresh on load. Defaults to True. Recommended to leave this on for low-resource machines or large datasets.",
+    help="Whether to disable Elasticsearch's (CPU-intensive) refresh during data load. Defaults to True. Recommended to leave this on for low-resource machines or large datasets.",
     default=True,
 )
 def main(
@@ -152,7 +152,7 @@ def load_from_sparql(path, es_credentials, index, limit, page_size=100, **kwargs
         query = f.read()
 
     # limit is used when getting list of entities
-    print(f"Getting entities from SPARQL query")
+    print("Getting entities from SPARQL query")
     entity_list = sparql_to_es.get_entities_from_query(
         query, page_size=100, limit=limit
     )
