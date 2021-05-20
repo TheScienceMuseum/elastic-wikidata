@@ -4,6 +4,7 @@ All notable changes documented below.
 
 ## 1.0.0-beta
 - **enhancement (breaking change):** properties now passed as whitespace-separated list rather than comma-separated. They can also be passed through a config file by giving the `--properties` option a filename to a file that exists.
+- **stability improvements:** `elasticsearch.helpers.streaming_bulk` now used instead of `elasticsearch.helpers.parallel_bulk` due to issues with memory usage of the latter. Bulk load now retries on timeout.
 
 ## 0.3.7
 - **fix:** reading from JSON dump forces utf-8
