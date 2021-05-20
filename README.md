@@ -9,7 +9,7 @@ Simple CLI tools to load a subset of Wikidata into Elasticsearch. Part of the [H
   - [Loading from Wikidata dump (.ndjson)](#loading-from-wikidata-dump-ndjson)
   - [Loading from SPARQL query](#loading-from-sparql-query)
   - [Temporary side effects](#temporary-side-effects)
-  
+
 </br>
 
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/elastic-wikidata)
@@ -62,7 +62,7 @@ A full list of options can be found with `ew --help`, but the following are like
 
 - `--index/-i`: the index name to push to. If not specified at runtime, elastic-wikidata will prompt for it
 - `--limit/-l`: limit the number of records pushed into ES. You might want to use this for a small trial run before importing the whole thing.
-- `--properties/-prop`: pass a comma-separated list of properties to include in the ES index. E.g. *p31,p21*.
+- `--properties/-prop`: a whitespace-separated list of properties to include in the ES index e.g. *'p31 p21'*, or the path to a text file containing newline-separated properties e.g. [this one](./pids.sample.cfg).
 - `--language/-lang`: [Wikimedia language code](https://www.wikidata.org/wiki/Help:Wikimedia_language_codes/lists/all). Only one supported at this time.
 
 ### Loading from Wikidata dump (.ndjson)

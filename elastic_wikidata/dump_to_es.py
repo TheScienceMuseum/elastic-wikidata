@@ -2,7 +2,7 @@ import json
 from itertools import islice
 from tqdm.auto import tqdm
 from elasticsearch import Elasticsearch
-from elasticsearch.helpers import parallel_bulk
+from elasticsearch.helpers import streaming_bulk
 from typing import Union
 from elastic_wikidata.wd_entities import (
     get_entities,
@@ -87,11 +87,16 @@ class processDump:
                     self.es_credentials["ELASTICSEARCH_USER"],
                     self.es_credentials["ELASTICSEARCH_PASSWORD"],
                 ),
+                max_retries=100,
+                retry_on_timeout=True,
             )
         else:
             # run on localhost
             print("Connecting to Elasticsearch on localhost")
-            self.es = Elasticsearch()
+            self.es = Elasticsearch(
+                max_retries=100,
+                retry_on_timeout=True,
+            )
 
         mappings = {
             "mappings": {
@@ -122,28 +127,31 @@ class processDump:
         elif self.entities:
             action_generator = self.generate_actions_from_entities()
 
-        for ok, action in tqdm(
-            parallel_bulk(
-                client=self.es,
-                index=self.index_name,
-                actions=action_generator,
-                chunk_size=self.config["chunk_size"],
-                queue_size=self.config["queue_size"],
-            ),
-        ):
-            if not ok:
-                print(action)
-                errors.append(action)
-            successes += ok
+        try:
+            for ok, action in tqdm(
+                streaming_bulk(
+                    client=self.es,
+                    index=self.index_name,
+                    actions=action_generator,
+                    chunk_size=self.config["chunk_size"],
+                    # queue_size=self.config["queue_size"],
+                    max_retries=3,
+                ),
+            ):
+                if not ok:
+                    print(action)
+                    errors.append(action)
+                successes += ok
 
-        if self.disable_refresh_on_index:
-            # reset back to default
-            print("Refresh interval set back to default of 1s.")
-            self.es.indices.put_settings({"index": {"refresh_interval": "1s"}})
+        finally:
+            if self.disable_refresh_on_index:
+                # reset back to default
+                print("Refresh interval set back to default of 1s.")
+                self.es.indices.put_settings({"index": {"refresh_interval": "1s"}})
 
     def process_doc(self, doc: dict) -> dict:
         """
-        Processes a single document from the JSON dump, returning a filtered version of that document. 
+        Processes a single document from the JSON dump, returning a filtered version of that document.
         """
 
         lang = self.wiki_options["lang"]
@@ -153,8 +161,8 @@ class processDump:
 
     def generate_actions_from_dump(self):
         """
-        Generator to yield a processed document from the Wikidata JSON dump. 
-        Each line of the Wikidata JSON dump is a separate document. 
+        Generator to yield a processed document from the Wikidata JSON dump.
+        Each line of the Wikidata JSON dump is a separate document.
         """
         with open(self.dump_path, "r", encoding="utf-8") as f:
             objects = (json.loads(line) for line in f)
@@ -170,7 +178,7 @@ class processDump:
 
     def generate_actions_from_entities(self):
         """
-        Generator to yield processed document from list of entities. Calls are made to 
+        Generator to yield processed document from list of entities. Calls are made to
         wbgetentities API with page size of 50 to retrieve documents.
         """
 

@@ -1,0 +1,6 @@
+pre-commit
+black
+pytest
+pylint
+flake8
+jupyterlab

@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="elastic-wikidata",
-    version="0.3.7",
+    version="1.0.0",
     author="Science Museum Group",
     description="elastic-wikidata",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/TheScienceMuseum/elastic-wikidata",
-    download_url="https://github.com/TheScienceMuseum/elastic-wikidata/archive/v0.3.2.tar.gz",
+    download_url="https://github.com/TheScienceMuseum/elastic-wikidata/archive/v1.0.0.tar.gz",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

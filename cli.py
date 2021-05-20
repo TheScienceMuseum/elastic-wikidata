@@ -1,5 +1,6 @@
 from elastic_wikidata import dump_to_es, sparql_to_es
 from elastic_wikidata.config import runtime_config
+import os
 import click
 from configparser import ConfigParser
 
@@ -44,7 +45,7 @@ from configparser import ConfigParser
     "--properties",
     "-prop",
     type=str,
-    help="One or more Wikidata property e.g. p31 or p31,p21. Not case-sensitive",
+    help="One or more Wikidata property e.g. 'p31' or 'p31 p21'. A path to a file containing newline-separated properties can also be passed. Not case-sensitive",
 )
 @click.option(
     "--timeout",
@@ -56,7 +57,7 @@ from configparser import ConfigParser
 @click.option(
     "--disable_refresh/--no_disable_refresh",
     "-dr/-ndr",
-    help="Whether to disable CPU-intensive refresh on load. Defaults to True. Recommended to leave this on for low-resource machines or large datasets.",
+    help="Whether to disable Elasticsearch's (CPU-intensive) refresh during data load. Defaults to True. Recommended to leave this on for low-resource machines or large datasets.",
     default=True,
 )
 def main(
@@ -117,7 +118,12 @@ def main(
     if language:
         kwargs["lang"] = language
     if properties:
-        kwargs["properties"] = properties.split(",")
+        if os.path.exists(properties):
+            with open(properties, "r") as f:
+                kwargs["properties"] = f.read().splitlines()
+        else:
+            kwargs["properties"] = properties.split()
+
     if disable_refresh:
         kwargs["disable_refresh_on_index"] = disable_refresh
 
@@ -152,7 +158,7 @@ def load_from_sparql(path, es_credentials, index, limit, page_size=100, **kwargs
         query = f.read()
 
     # limit is used when getting list of entities
-    print(f"Getting entities from SPARQL query")
+    print("Getting entities from SPARQL query")
     entity_list = sparql_to_es.get_entities_from_query(
         query, page_size=100, limit=limit
     )
