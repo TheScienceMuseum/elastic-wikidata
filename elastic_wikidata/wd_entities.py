@@ -174,7 +174,7 @@ def simplify_wbgetentities_result(
                 for i in doc["claims"][p]:
                     try:
                         value_type = i["mainsnak"]["datavalue"]["type"]
-                        if value_type == "string":
+                        if value_type == "string" or value_type == "globecoordinate":
                             claims.append(i["mainsnak"]["datavalue"]["value"])
                         else:
                             value_name = wd_type_mapping[value_type]
