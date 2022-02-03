@@ -10,13 +10,13 @@ from elastic_wikidata.config import runtime_config
 class get_entities:
     def __init__(self):
         """
-        One instance of this class per list of qcodes. The JSON response for a list of qcodes is made to Wikidata on 
-        creation of a class instance. 
+        One instance of this class per list of qcodes. The JSON response for a list of qcodes is made to Wikidata on
+        creation of a class instance.
 
         Args:
             qcodes (str/list): Wikidata qcode or list of qcodes/
             lang (str, optional): Defaults to 'en'.
-            page_limit (int): page limit for Wikidata API. Usually 50, can reach 500. 
+            page_limit (int): page limit for Wikidata API. Usually 50, can reach 500.
         """
         self.endpoint = (
             "http://www.wikidata.org/w/api.php?action=wbgetentities&format=json"
@@ -43,7 +43,7 @@ class get_entities:
         self, qcodes, lang="en", page_limit=50, timeout: int = None
     ) -> list:
         """
-        Get response through the `wbgetentities` API. 
+        Get response through the `wbgetentities` API.
 
         Returns:
             list: each item is a the response for an entity
@@ -116,13 +116,13 @@ def simplify_wbgetentities_result(
     use_redirected_qid: bool = False,
 ) -> Union[dict, List[dict]]:
     """
-    Processes a single document or set of documents from the JSON result of wbgetentities, returning a simplified version of that document. 
+    Processes a single document or set of documents from the JSON result of wbgetentities, returning a simplified version of that document.
 
     Args:
         doc (Union[dict, List[dict]]): JSON result from Wikidata wbgetentities API
         lang (str): Wikimedia language code
         properties (list): list of Wikidata properties
-        use_redirected_qid (bool, optional): whether to return the redirected QID value under the 'id' field instead of the original QID 
+        use_redirected_qid (bool, optional): whether to return the redirected QID value under the 'id' field instead of the original QID
             if there is one. Defaults to False.
 
     Returns:
@@ -174,15 +174,19 @@ def simplify_wbgetentities_result(
                 for i in doc["claims"][p]:
                     try:
                         value_type = i["mainsnak"]["datavalue"]["type"]
-                        if value_type == "string" or value_type == "globecoordinate":
-                            claims.append(i["mainsnak"]["datavalue"]["value"])
-                        else:
+                        if value_type in wd_type_mapping.keys():
+                            # Return specific value for certain types.
                             value_name = wd_type_mapping[value_type]
                             claims.append(
                                 i["mainsnak"]["datavalue"]["value"][value_name]
                             )
+                        else:
+                            # Otherwise return the whole dictionary.
+                            claims.append(i["mainsnak"]["datavalue"]["value"])
                     except KeyError:
-                        pass
+                        print(
+                            f"WARNING: property {p} with datatype {value_type} failed to process. Consider forking this code and implementing support for it."
+                        )
 
                 newdoc["claims"][p] = claims
 
